@@ -67,11 +67,20 @@ export const CHECKIN = {
       { id: 'selfkind', text: 'How kind can you be to yourself right now?', low: 'Hard on me', high: 'Kind' },
     ],
   },
-  // Children answer with faces, guided by a grown-up. Fewer, simpler prompts.
+  // Children answer with pictures, guided by a grown-up. Young kids read a
+  // "weather inside you" metaphor far more naturally than a number or a scale —
+  // it's a staple of preschool emotion coaching. Faces are kept as a backup.
   child: {
-    overallPrompt: 'How big is your feeling?',
-    overallHint: 'Pick the face that feels most like you',
+    overallPrompt: 'What’s the weather inside you?',
+    overallHint: 'Point to the sky that feels like you right now',
     faces: ['😖', '😢', '😐', '🙂', '😄'],
+    weathers: [
+      { e: '⛈️', label: 'Stormy', v: 2 },
+      { e: '🌧️', label: 'Rainy', v: 4 },
+      { e: '☁️', label: 'Cloudy', v: 6 },
+      { e: '🌤️', label: 'Peeking sun', v: 8 },
+      { e: '☀️', label: 'Sunny', v: 10 },
+    ],
     questions: [
       { id: 'body', text: 'Is your body calm or wiggly?', low: 'Wiggly', high: 'Calm' },
       { id: 'happy', text: 'How happy is your heart?', low: 'Sad', high: 'Happy' },
@@ -222,6 +231,28 @@ export const ONBOARDING = {
   ],
   // The grown-up fills this in for a young child.
   child: [
+    {
+      id: 'theme',
+      type: 'single',
+      title: 'What does she love most right now?',
+      subtitle: 'We’ll theme the games and her buddy around it.',
+      options: [
+        { value: 'pups', label: '🐶 Rescue pups' },
+        { value: 'animals', label: '🐾 Animals' },
+        { value: 'ocean', label: '🐠 Ocean friends' },
+        { value: 'space', label: '🚀 Space' },
+        { value: 'dino', label: '🦖 Dinosaurs' },
+        { value: 'unicorn', label: '🦄 Unicorns & magic' },
+      ],
+    },
+    {
+      id: 'heroes',
+      type: 'text',
+      title: 'Favorite characters?',
+      subtitle: 'Type their names (like her favorite pups) and we’ll use them as her helpers. You can leave this blank.',
+      placeholder: 'e.g. Chase, Skye, Marshall',
+      optional: true,
+    },
     {
       id: 'favoriteAnimal', type: 'text',
       title: 'What is their favorite animal?',
@@ -498,8 +529,8 @@ export const TECHNIQUES = [
   },
   {
     id: 'child-feelings',
-    title: 'Name the feeling',
-    lead: 'Point to the face that feels like you right now.',
+    title: 'Show your feeling',
+    lead: 'Show me your feeling — the weather inside, and how big it is.',
     kind: 'child-feelings',
     bands: ['child'],
     severityFit: 'low',
@@ -539,8 +570,64 @@ export const TECHNIQUES = [
     durationSec: 90,
     why: 'Big feelings live in a little body. A short burst of silly, guided movement (stomp like an elephant, flap like a bird) discharges the surge and redirects attention through play — catching a meltdown before it fully lands. A calm grown-up joining in is the real magic (co-regulation).',
   },
+  {
+    id: 'child-pop',
+    title: 'Pop the pop-ups',
+    lead: 'Tap the friends as they peek out — pop, pop, pop!',
+    kind: 'game',
+    game: 'popPups',
+    bands: ['child'],
+    severityFit: 'high',
+    durationSec: 90,
+    why: 'A simple, winnable tap game is powerful distraction for a young child: it captures attention completely, gives instant playful feedback, and asks nothing hard — redirecting a rising storm onto something fun.',
+  },
+  {
+    id: 'child-colortap',
+    title: 'Color helpers',
+    lead: 'Your buddy calls a color — can you find and tap it?',
+    kind: 'game',
+    game: 'colorTap',
+    bands: ['child'],
+    severityFit: 'low',
+    durationSec: 90,
+    why: 'A little “find the color” challenge gives a child’s mind one clear, doable job — enough focus to interrupt distress, with a happy cheer each time that keeps them engaged.',
+  },
+  {
+    id: 'child-scribble',
+    title: 'Draw your feeling',
+    lead: 'Use your finger to scribble how you feel — any colors you like.',
+    kind: 'game',
+    game: 'scribble',
+    bands: ['child'],
+    severityFit: 'low',
+    durationSec: 120,
+    why: 'Young children often can’t put big feelings into words, but they can put them onto a page. Scribbling gives the feeling somewhere to go and is calming and expressive at once — a different, developmentally natural way to “say” how they feel.',
+  },
 ];
 
 export function techniqueById(id) {
   return TECHNIQUES.find((t) => t.id === id) || null;
+}
+
+// ---------------------------------------------------------------------------
+// Child theming. Skins the games and the buddy around what the child loves.
+// We intentionally use friendly generic characters (emoji) rather than any
+// branded/trademarked artwork, and let the grown-up type the actual character
+// names the child adores so they show up as the on-screen helpers.
+// ---------------------------------------------------------------------------
+const THEMES = {
+  pups:    { emojis: ['🐶', '🐕', '🦮', '🐩', '🐕‍🦺', '🐾'], buddy: '🐶', word: 'pup',   crew: 'rescue pups' },
+  animals: { emojis: ['🐰', '🦊', '🐻', '🐼', '🐨', '🦁'], buddy: '🐻', word: 'friend', crew: 'animal friends' },
+  ocean:   { emojis: ['🐠', '🐙', '🐢', '🐳', '🦀', '🐚'], buddy: '🐠', word: 'friend', crew: 'ocean friends' },
+  space:   { emojis: ['🚀', '⭐', '🪐', '🌙', '☄️', '👽'], buddy: '🚀', word: 'star',   crew: 'space crew' },
+  dino:    { emojis: ['🦖', '🦕', '🦎', '🐊', '🥚', '🌋'], buddy: '🦖', word: 'dino',   crew: 'dino pals' },
+  unicorn: { emojis: ['🦄', '🌈', '⭐', '🦋', '🌸', '✨'], buddy: '🦄', word: 'friend', crew: 'magic friends' },
+};
+
+export function childTheme(profile) {
+  const ob = profile.onboarding || {};
+  const t = THEMES[ob.theme] || THEMES.animals;
+  const heroes = String(ob.heroes || '')
+    .split(/[,/&]| and /i).map((s) => s.trim()).filter(Boolean).slice(0, 6);
+  return { ...t, heroes };
 }

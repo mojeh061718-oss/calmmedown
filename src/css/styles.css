@@ -45,11 +45,26 @@
 
 * { box-sizing: border-box; }
 
-html, body {
-  margin: 0;
-  min-height: 100%;
+/* Lock the viewport so the whole app can't be dragged/scrolled/bounced (the
+   iOS "rubber band" and pull-to-refresh). The body is pinned to the screen and
+   only #app scrolls internally, so holding a finger down and moving never drags
+   the page — critical for the drag-based games and for little hands. */
+html {
+  height: 100%;
+  overscroll-behavior: none;
 }
 body {
+  margin: 0;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;            /* no double-tap zoom */
+  -webkit-user-select: none;             /* no hold-to-select magnifier */
+  user-select: none;
+  -webkit-touch-callout: none;
   font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: var(--ink);
   background:
@@ -61,7 +76,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-#app { min-height: 100vh; }
+/* Only this container scrolls, and its scrolling never chains to the body. */
+#app {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Text entry still needs selection/caret. */
+input, textarea, [contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
 
 .wrap {
   max-width: 560px;
@@ -369,6 +398,58 @@ fieldset.field-label { min-inline-size: auto; }
 .parade-emoji.pop { animation: pop 0.5s var(--ease); }
 @keyframes pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
 .parade-move { font-size: 1.3rem; font-weight: 650; min-height: 1.6em; }
+
+/* Weather picker (child check-in + feelings) */
+.weather-pick, .weather-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 8px 0; }
+.weather-pick-btn, .weather-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 60px; min-height: 72px; padding: 6px; border-radius: 16px;
+  border: 1px solid var(--line); background: var(--card-2); cursor: pointer; font: inherit;
+}
+.weather-pick-btn span, .weather-btn span { font-size: 2rem; }
+.weather-pick-btn small, .weather-btn small { color: var(--muted); font-size: 0.68rem; }
+.weather-pick-btn.sel, .weather-btn.sel { border-color: var(--accent); background: rgba(127,176,217,0.2); }
+
+/* Size-of-feeling picker */
+.feelex-q { font-weight: 650; margin: 14px 0 6px; }
+.size-row { display: flex; gap: 10px; justify-content: center; align-items: flex-end; }
+.size-btn { display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1px solid var(--line); background: var(--card-2); border-radius: 16px; cursor: pointer; font: inherit; padding: 8px 12px; }
+.size-btn small { color: var(--muted); font-size: 0.72rem; }
+.size-btn.sz-s span { font-size: 1.6rem; }
+.size-btn.sz-m span { font-size: 2.3rem; }
+.size-btn.sz-l span { font-size: 3.1rem; }
+.size-btn.sel { border-color: var(--accent); background: rgba(127,176,217,0.2); }
+
+/* Pop the pop-ups */
+.popgame { text-align: center; width: 100%; }
+.pop-field { position: relative; width: 100%; max-width: 340px; height: 300px; margin: 8px auto; border-radius: var(--radius);
+  background: radial-gradient(circle at 50% 30%, rgba(127,176,217,0.12), rgba(29,37,54,0.5)); border: 1px solid var(--line);
+  overflow: hidden; touch-action: none; }
+.pop-item { position: absolute; transform: translate(-50%, -50%); font-size: 2.6rem; background: none; border: 0; cursor: pointer; padding: 6px; line-height: 1; }
+.pop-item.rise { animation: popIn 0.3s var(--ease); }
+.pop-item.pop { animation: popOut 0.2s var(--ease) forwards; }
+@keyframes popIn { from { transform: translate(-50%,-50%) scale(0.2); } to { transform: translate(-50%,-50%) scale(1); } }
+@keyframes popOut { to { transform: translate(-50%,-50%) scale(1.7); opacity: 0; } }
+.pop-status { font-size: 1.1rem; font-weight: 650; margin-top: 10px; }
+
+/* Color helpers */
+.colortap { text-align: center; width: 100%; }
+.ct-say { font-size: 1.35rem; font-weight: 650; min-height: 1.6em; }
+.ct-blobs { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 18px 0; }
+.ct-blob { width: 72px; height: 72px; border-radius: 50%; border: 0; cursor: pointer; box-shadow: var(--shadow); }
+.ct-blob.pop { animation: pop 0.4s var(--ease); }
+.ct-blob.shake { animation: shake 0.4s; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.ct-cheer { min-height: 1.4em; font-size: 1.1rem; }
+
+/* Scribble pad */
+.scribble { text-align: center; width: 100%; }
+.scribble-tools { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+.swatch { width: 34px; height: 34px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.swatch.sel { border-color: var(--ink); transform: scale(1.12); }
+.scribble-pad { width: 100%; max-width: 340px; aspect-ratio: 3 / 2.2; border-radius: var(--radius); border: 1px solid var(--line);
+  background: #f7fafc; touch-action: none; cursor: crosshair; display: block; margin: 0 auto; }
+.btn-clear { max-width: 200px; margin-left: auto; margin-right: auto; }
 
 /* Result */
 .result-emoji { font-size: 3.4rem; margin-bottom: 6px; }

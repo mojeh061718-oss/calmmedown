@@ -39,6 +39,7 @@ const SLOT = {
   'child-buddy-breath': 'child-breath', 'child-flower-candle': 'child-breath',
   'child-cloud': 'child-breath', 'child-star': 'child-game', 'child-bubbles': 'child-game',
   'child-feelings': 'child-feelings', 'child-parade': 'child-move',
+  'child-pop': 'child-game', 'child-colortap': 'child-game', 'child-scribble': 'child-feelings',
 };
 
 const slotOf = (id) => SLOT[id] || 'other';
@@ -95,7 +96,7 @@ export function buildSession(profile, pre) {
   // breathe, which several told us pressure-cooks them.
   if (severe) {
     const openers = band === 'child'
-      ? ['child-parade', 'child-cloud', 'child-buddy-breath']
+      ? ['child-parade', 'child-pop', 'child-cloud', 'child-buddy-breath']
       : style === 'outward'
         ? ['sunlight', 'walk-it-out', 'cold-reset', 'word-search']
         : ['physiological-sigh', 'cold-reset', 'grounding-54321'];

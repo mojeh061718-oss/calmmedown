@@ -315,7 +315,9 @@ function screenCheckin(profile, forceHelp, mode = 'pre', onDone = null, quick = 
   const overallHtml = child
     ? `<div class="q overall">
          <p class="q-text">${esc(cfg.overallPrompt)}</p>
-         <div class="faces">${cfg.faces.map((f, i) => `<button class="face-pick" type="button" data-v="${(i + 1) * 2}">${f}</button>`).join('')}</div>
+         ${cfg.weathers
+           ? `<div class="weather-pick">${cfg.weathers.map((w) => `<button class="weather-pick-btn" type="button" data-v="${w.v}"><span>${w.e}</span><small>${esc(w.label)}</small></button>`).join('')}</div>`
+           : `<div class="faces">${cfg.faces.map((f, i) => `<button class="face-pick" type="button" data-v="${(i + 1) * 2}">${f}</button>`).join('')}</div>`}
          <p class="muted tiny">${esc(cfg.overallHint)}</p>
        </div>`
     : `<div class="q overall">

@@ -6,8 +6,8 @@
 // Every technique screen shows one thing at a time, a gentle "Continue", and an
 // optional, no-pressure thumb so the app can learn what actually helped.
 
-import { techniqueById } from './content.js';
-import { breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade } from './games.js';
+import { techniqueById, childTheme } from './content.js';
+import { breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade, popPups, colorTap, scribble } from './games.js';
 
 export function runGuidedSession(container, profile, ids, opts = {}) {
   const reducedMotion = profile.prefs?.reducedMotion || opts.reducedMotion;
@@ -230,17 +230,44 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
     footControls(foot, t);
   }
 
+  // Young children "say" feelings through pictures, weather, and size — not
+  // words or scales. This offers a few playful representations to pick from.
   function renderChildFeelings(body, foot, t) {
-    const faces = [['😄', 'Great'], ['🙂', 'Okay'], ['😐', 'Meh'], ['😢', 'Sad'], ['😖', 'Big feeling']];
+    const theme = childTheme(profile);
+    const buddy = theme.buddy;
+    const weathers = [
+      ['⛈️', 'Stormy'], ['🌧️', 'Rainy'], ['☁️', 'Cloudy'], ['🌤️', 'Peeking sun'], ['☀️', 'Sunny'],
+    ];
+    const sizes = [
+      ['🐭', 'a little', 'sz-s'], ['🐰', 'medium', 'sz-m'], ['🦁', 'SO big', 'sz-l'],
+    ];
     body.innerHTML = `
-      <p class="lede-sub">Point to the face that feels like you.</p>
-      <div class="face-row">${faces.map(([f, l]) => `<button class="face-btn" type="button"><span>${f}</span><small>${l}</small></button>`).join('')}</div>
-      <p class="label-echo big" role="status" aria-live="polite"></p>`;
+      <div class="feelex">
+        <p class="feelex-q">What’s the weather inside you?</p>
+        <div class="weather-row">${weathers.map(([e, l]) => `<button class="weather-btn" type="button" aria-label="${l}"><span>${e}</span><small>${l}</small></button>`).join('')}</div>
+        <p class="feelex-q">How big is the feeling?</p>
+        <div class="size-row">${sizes.map(([e, l, c]) => `<button class="size-btn ${c}" type="button" aria-label="${l}"><span>${e}</span><small>${l}</small></button>`).join('')}</div>
+        <p class="label-echo big" role="status" aria-live="polite"></p>
+      </div>`;
     const echo = body.querySelector('.label-echo');
-    body.querySelectorAll('.face-btn').forEach((b) =>
+    const pick = { weather: null, size: null };
+    const update = () => {
+      if (pick.weather && pick.size) {
+        echo.textContent = `${buddy} Thank you for showing me. Even ${pick.size} feelings get smaller. I’m right here with you. 💛`;
+      } else if (pick.weather || pick.size) {
+        echo.textContent = 'Thank you for showing me. 💛';
+      }
+    };
+    body.querySelectorAll('.weather-btn').forEach((b) =>
       b.addEventListener('click', () => {
-        body.querySelectorAll('.face-btn').forEach((x) => x.classList.toggle('sel', x === b));
-        echo.textContent = 'Thank you for showing me. It’s okay to feel that. 💛';
+        body.querySelectorAll('.weather-btn').forEach((x) => x.classList.toggle('sel', x === b));
+        pick.weather = b.getAttribute('aria-label'); update();
+      })
+    );
+    body.querySelectorAll('.size-btn').forEach((b) =>
+      b.addEventListener('click', () => {
+        body.querySelectorAll('.size-btn').forEach((x) => x.classList.toggle('sel', x === b));
+        pick.size = b.getAttribute('aria-label'); update();
       })
     );
     footControls(foot, t);
@@ -257,8 +284,13 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
     if (t.game === 'starBreath') return starBreath(body, { durationSec: dur, reducedMotion });
     if (t.game === 'wordSearch') return wordSearch(body, { durationSec: dur, reducedMotion });
     if (t.game === 'walkPacer') return walkPacer(body, { durationSec: dur, reducedMotion });
-    if (t.game === 'blowCloud') return blowCloud(body, { reducedMotion, animal: cob.favoriteAnimal || '' });
-    if (t.game === 'wiggleParade') return wiggleParade(body, { reducedMotion, buddyName: cob.buddyName || 'Your buddy' });
+    const theme = profile.band === 'child' ? childTheme(profile) : null;
+    const buddyName = (theme && theme.heroes[0]) || cob.buddyName || 'Your buddy';
+    if (t.game === 'blowCloud') return blowCloud(body, { reducedMotion, animal: cob.favoriteAnimal || '', revealEmoji: (!cob.favoriteAnimal && theme) ? theme.buddy : '' });
+    if (t.game === 'wiggleParade') return wiggleParade(body, { reducedMotion, buddyName });
+    if (t.game === 'popPups') return popPups(body, { reducedMotion, theme });
+    if (t.game === 'colorTap') return colorTap(body, { reducedMotion, buddyName, favoriteColor: cob.favoriteColor || 'blue' });
+    if (t.game === 'scribble') return scribble(body, { reducedMotion });
     return breathePacer(body, { pattern: 'sigh', cycles: 8, reducedMotion });
   }
 

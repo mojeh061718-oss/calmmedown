@@ -61,13 +61,29 @@ Each day it reads recent history and decides what the person likely needs — an
 if the last few days have been heavier than usual, it gently pre-positions extra
 softness, **without ever naming a cause.**
 
-**For a young child**, everything changes: a grown-up sets up the child’s
-favourite animal and colour, the check-in becomes faces, and the session leads
-with playful movement and redirection to catch a meltdown *before* it peaks — a
-wiggle parade, "blow the cloud away" (which reveals their favourite animal),
-buddy-belly-breaths, star breathing, and naming feelings with pictures. It’s
-built to be done *with* a calm grown-up (co-regulation), because a four-year-old
-borrows steadiness from an adult before they can find their own.
+**For a young child**, everything changes. A grown-up sets up what she loves —
+a **theme** (rescue pups, animals, ocean, space, dinosaurs, unicorns) and even
+the names of her favourite characters, which become her on-screen helpers — plus
+her favourite animal and colour. The session leads with playful movement and
+distraction to catch a meltdown *before* it peaks, and it’s built to be done
+*with* a calm grown-up (co-regulation), because a four-year-old borrows
+steadiness from an adult before they can find their own. Her toolkit:
+
+- **Wiggle parade** — silly guided movement to shake big feelings out
+- **Pop the pop-ups** — a winnable, all-absorbing tap game (themed to what she loves)
+- **Blow the cloud away** — a long calming exhale as a game, revealing her buddy
+- **Color helpers** — her helper calls a colour to find and tap
+- **Draw your feeling** — a finger scribble pad, because little kids "say" big
+  feelings by drawing them, not with words
+- **Buddy belly breaths & star breathing**, and
+
+**Feelings, her way.** Instead of numbers, she checks in with **weather inside
+you** (stormy → sunny) and shows **how big** the feeling is (a little → SO big)
+— the representations a four-year-old actually understands.
+
+*A note on characters:* the app uses friendly generic characters and lets you
+type in the names your child loves (so her "rescue pups" show up by name),
+rather than embedding any brand’s copyrighted artwork on a public page.
 
 **When a full check-in is too much**, there’s a one-question option (just the
 1–10), so a heavy day never turns into a form to fill out. And the result screen
@@ -134,7 +150,10 @@ RESEARCH.md           The evidence behind every technique, with sources
 Accessibility & comfort are first-class: large tap targets, soft muted palette,
 slow motion, live-region announcements, and a **reduce-motion** toggle (plus it
 honours the OS `prefers-reduced-motion` setting). Breathing exercises fall back
-to text-led guidance when motion is reduced.
+to text-led guidance when motion is reduced. The viewport is **locked** — the
+whole page can’t be dragged, scrolled, or rubber-band-bounced (only content
+areas scroll when needed), so a resting finger or a drag-based game never
+accidentally drags the app. That matters especially for small hands.
 
 ---
 

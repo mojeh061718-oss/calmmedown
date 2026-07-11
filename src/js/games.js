@@ -442,8 +442,8 @@ export function walkPacer(container, { durationSec = 180, reducedMotion = false 
 // "blow" (tap) puffs it smaller until it clears. Turns a long exhale into a
 // game a young child wants to play, with a reveal to hold attention.
 // ---------------------------------------------------------------------------
-export function blowCloud(container, { reducedMotion = false, animal = '' } = {}) {
-  const reveal = animal ? animalEmoji(animal) : '☀️';
+export function blowCloud(container, { reducedMotion = false, animal = '', revealEmoji = '' } = {}) {
+  const reveal = revealEmoji || (animal ? animalEmoji(animal) : '☀️');
   const el = document.createElement('div');
   el.className = 'blowcloud';
   el.innerHTML = `
@@ -518,6 +518,167 @@ export function wiggleParade(container, { reducedMotion = false, buddyName = 'Bu
   return { done, stop: () => resolveDone() };
 }
 
+// ---------------------------------------------------------------------------
+// Pop the pop-ups (child) — friendly characters peek out; tap to pop them with
+// a happy wobble. A completely winnable, high-distraction tap game.
+// ---------------------------------------------------------------------------
+export function popPups(container, { theme = {}, reducedMotion = false } = {}) {
+  const emojis = theme.emojis || ['🐶', '🐰', '⭐', '🐥', '🐢', '🦊'];
+  const crew = theme.crew || 'friends';
+  const el = document.createElement('div');
+  el.className = 'popgame';
+  el.innerHTML = `
+    <p class="game-hint muted">Tap the ${escapeName(crew)} as they peek out!</p>
+    <div class="pop-field" aria-label="tap the characters"></div>
+    <p class="pop-status" role="status" aria-live="polite">Pop them! 0</p>`;
+  container.appendChild(el);
+  const field = el.querySelector('.pop-field');
+  const status = el.querySelector('.pop-status');
+  const target = 12;
+  let count = 0, gc = null, stopped = false;
+
+  const spawn = () => {
+    if (stopped) return;
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'pop-item';
+    item.textContent = emojis[Math.floor((performance.now() + count) % emojis.length)];
+    item.style.left = (8 + ((performance.now() * 7) % 78)) + '%';
+    item.style.top = (10 + ((performance.now() * 13) % 72)) + '%';
+    if (!reducedMotion) item.classList.add('rise');
+    const remove = () => item.remove();
+    const timer = setTimeout(remove, 2400);
+    item.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      clearTimeout(timer);
+      if (!reducedMotion) { item.classList.add('pop'); setTimeout(remove, 200); } else remove();
+      count++;
+      status.textContent = count >= target ? `You popped them all! 🎉` : `Pop them! ${count}`;
+      if (count >= target) { stopped = true; setTimeout(() => gc?.complete?.(), 900); }
+    });
+    field.appendChild(item);
+  };
+  const iv = setInterval(spawn, reducedMotion ? 1100 : 750);
+  spawn();
+
+  gc = timedGame(el, 90, () => { stopped = true; clearInterval(iv); });
+  return gc;
+}
+
+// ---------------------------------------------------------------------------
+// Color helpers (child) — the buddy names a color; the child taps the matching
+// blob. One clear, doable job, with a cheer each round.
+// ---------------------------------------------------------------------------
+export function colorTap(container, { favoriteColor = 'blue', buddyName = 'Your buddy', reducedMotion = false } = {}) {
+  const COLORS = [
+    { k: 'red', hex: '#e06666' }, { k: 'blue', hex: '#6fa8dc' }, { k: 'green', hex: '#93c47d' },
+    { k: 'yellow', hex: '#ffd966' }, { k: 'purple', hex: '#b48ee0' }, { k: 'orange', hex: '#f0a35e' },
+    { k: 'pink', hex: '#e79ac0' },
+  ];
+  const el = document.createElement('div');
+  el.className = 'colortap';
+  el.innerHTML = `
+    <p class="ct-say" role="status" aria-live="polite">Get ready…</p>
+    <div class="ct-blobs"></div>
+    <p class="ct-cheer muted" aria-live="polite"></p>`;
+  container.appendChild(el);
+  const say = el.querySelector('.ct-say');
+  const blobs = el.querySelector('.ct-blobs');
+  const cheer = el.querySelector('.ct-cheer');
+  const rounds = 5;
+  let round = 0, gc = null;
+  const cheers = ['Yes! 🎉', 'You got it! ⭐', 'Woohoo!', 'Amazing!', 'High five! 🙌'];
+
+  const shuffleLocal = (a) => shuffle(a);
+  const nextRound = () => {
+    round++;
+    if (round > rounds) { say.textContent = 'You’re a color star! 🌈'; blobs.innerHTML = ''; setTimeout(() => gc?.complete?.(), 900); return; }
+    // pick a target, prefer favourite on first round
+    const pool = shuffleLocal(COLORS);
+    const target = round === 1 ? (COLORS.find((c) => c.k === favoriteColor) || pool[0]) : pool[0];
+    const choices = shuffleLocal([target, ...pool.filter((c) => c.k !== target.k).slice(0, 3)]);
+    say.textContent = `${escapeName(buddyName)} says: tap ${target.k}!`;
+    blobs.innerHTML = '';
+    choices.forEach((c) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'ct-blob'; b.style.background = c.hex;
+      b.setAttribute('aria-label', c.k);
+      b.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        if (c.k === target.k) {
+          cheer.textContent = cheers[(round - 1) % cheers.length];
+          if (!reducedMotion) b.classList.add('pop');
+          setTimeout(nextRound, 650);
+        } else {
+          if (!reducedMotion) { b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); }
+          cheer.textContent = 'Try again 💛';
+        }
+      });
+      blobs.appendChild(b);
+    });
+  };
+  setTimeout(nextRound, 600);
+
+  gc = timedGame(el, 90);
+  return gc;
+}
+
+// ---------------------------------------------------------------------------
+// Draw your feeling (child) — a finger scribble pad. A developmentally natural
+// way to "say" a big feeling without words. Soft colours; clearable.
+// ---------------------------------------------------------------------------
+export function scribble(container, { reducedMotion = false } = {}) {
+  const el = document.createElement('div');
+  el.className = 'scribble';
+  el.innerHTML = `
+    <p class="game-hint muted">Draw how you feel — squiggles, colors, anything.</p>
+    <div class="scribble-tools" role="group" aria-label="colors"></div>
+    <canvas class="scribble-pad" width="600" height="440" aria-label="drawing area"></canvas>
+    <button class="btn btn-ghost btn-clear" type="button">Start over</button>`;
+  container.appendChild(el);
+  const tools = el.querySelector('.scribble-tools');
+  const canvas = el.querySelector('.scribble-pad');
+  const ctx = canvas.getContext('2d');
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 10;
+
+  const palette = ['#6fa8dc', '#93c47d', '#ffd966', '#e06666', '#b48ee0', '#f0a35e', '#eef2fb'];
+  let color = palette[0];
+  palette.forEach((hex, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'swatch' + (i === 0 ? ' sel' : '');
+    b.style.background = hex; b.setAttribute('aria-label', 'color');
+    b.addEventListener('pointerdown', () => {
+      color = hex; tools.querySelectorAll('.swatch').forEach((s) => s.classList.toggle('sel', s === b));
+    });
+    tools.appendChild(b);
+  });
+
+  let drawing = false, last = null;
+  const pos = (e) => {
+    const r = canvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (canvas.width / r.width), y: (e.clientY - r.top) * (canvas.height / r.height) };
+  };
+  const start = (e) => { e.preventDefault(); drawing = true; last = pos(e); dot(last); };
+  const move = (e) => {
+    if (!drawing) return;
+    e.preventDefault();
+    const p = pos(e);
+    ctx.strokeStyle = color;
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    last = p;
+  };
+  const dot = (p) => { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx.fill(); };
+  const end = () => { drawing = false; };
+  canvas.addEventListener('pointerdown', start);
+  canvas.addEventListener('pointermove', move);
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  canvas.addEventListener('pointerleave', end);
+  el.querySelector('.btn-clear').addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
+
+  return timedGame(el, 120);
+}
+
 function animalEmoji(name) {
   const n = String(name).toLowerCase();
   const map = { bunny: '🐰', rabbit: '🐰', cat: '🐱', kitty: '🐱', dog: '🐶', puppy: '🐶',
@@ -530,4 +691,4 @@ function escapeName(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-export const GAMES = { breathOrb: breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade };
+export const GAMES = { breathOrb: breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade, popPups, colorTap, scribble };
