@@ -42,7 +42,11 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
   function renderIntro() {
     const child = profile.band === 'child';
     const outward = ob.style === 'outward';
-    const anchor = (ob.anchor && !outward) ? `<p class="soft-anchor">Bringing to mind: <em>${escapeHtml(ob.anchor)}</em></p>` : '';
+    const theme = child ? childTheme(profile) : null;
+    const crewLine = (theme && theme.roster)
+      ? `<p class="crew-line">${theme.roster.slice(0, 4).map((p) => p.emoji).join(' ')} ${escapeHtml(theme.heroes.slice(0, 3).join(', '))} are here to help!</p>`
+      : '';
+    const anchor = (ob.anchor && !outward) ? `<p class="soft-anchor">Bringing to mind: <em>${escapeHtml(ob.anchor)}</em></p>` : crewLine;
     const heading = child ? 'Let’s get cozy.'
       : outward ? 'Let’s get you out of your head.'
       : 'You’re safe. Let’s take a few minutes just for you.';
@@ -234,7 +238,8 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
   // words or scales. This offers a few playful representations to pick from.
   function renderChildFeelings(body, foot, t) {
     const theme = childTheme(profile);
-    const buddy = theme.buddy;
+    const helper = theme.roster && theme.roster[0];
+    const buddy = helper ? `${helper.emoji} ${helper.name}:` : theme.buddy;
     const weathers = [
       ['⛈️', 'Stormy'], ['🌧️', 'Rainy'], ['☁️', 'Cloudy'], ['🌤️', 'Peeking sun'], ['☀️', 'Sunny'],
     ];
@@ -285,11 +290,17 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
     if (t.game === 'wordSearch') return wordSearch(body, { durationSec: dur, reducedMotion });
     if (t.game === 'walkPacer') return walkPacer(body, { durationSec: dur, reducedMotion });
     const theme = profile.band === 'child' ? childTheme(profile) : null;
+    const helper = theme && theme.roster && theme.roster[0]; // a named pup, when themed
     const buddyName = (theme && theme.heroes[0]) || cob.buddyName || 'Your buddy';
-    if (t.game === 'blowCloud') return blowCloud(body, { reducedMotion, animal: cob.favoriteAnimal || '', revealEmoji: (!cob.favoriteAnimal && theme) ? theme.buddy : '' });
+    if (t.game === 'blowCloud') return blowCloud(body, {
+      reducedMotion,
+      animal: cob.favoriteAnimal || '',
+      revealEmoji: helper ? helper.emoji : (theme ? theme.buddy : ''),
+      revealName: helper ? helper.name : (theme && theme.heroes[0]) || '',
+    });
     if (t.game === 'wiggleParade') return wiggleParade(body, { reducedMotion, buddyName });
     if (t.game === 'popPups') return popPups(body, { reducedMotion, theme });
-    if (t.game === 'colorTap') return colorTap(body, { reducedMotion, buddyName, favoriteColor: cob.favoriteColor || 'blue' });
+    if (t.game === 'colorTap') return colorTap(body, { reducedMotion, buddyName, favoriteColor: cob.favoriteColor || 'blue', roster: theme && theme.roster });
     if (t.game === 'scribble') return scribble(body, { reducedMotion });
     return breathePacer(body, { pattern: 'sigh', cycles: 8, reducedMotion });
   }

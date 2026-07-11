@@ -318,6 +318,7 @@ fieldset.field-label { min-inline-size: auto; }
 .c-quote { font-size: 1.25rem; font-style: italic; color: var(--accent-2); border-left: 3px solid var(--accent); padding-left: 14px; margin: 16px auto; max-width: 34ch; text-align: left; }
 .anchor-senses { text-align: left; max-width: 34ch; margin: 12px auto; color: var(--ink-soft); display: flex; flex-direction: column; gap: 8px; }
 .soft-anchor { color: var(--accent-2); font-style: italic; }
+.crew-line { font-size: 1.15rem; font-weight: 600; color: var(--calm); }
 
 /* Thumbs / why */
 .why { margin: 4px auto 12px; max-width: 40ch; text-align: left; color: var(--ink-soft); }

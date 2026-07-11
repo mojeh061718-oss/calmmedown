@@ -442,7 +442,7 @@ export function walkPacer(container, { durationSec = 180, reducedMotion = false 
 // "blow" (tap) puffs it smaller until it clears. Turns a long exhale into a
 // game a young child wants to play, with a reveal to hold attention.
 // ---------------------------------------------------------------------------
-export function blowCloud(container, { reducedMotion = false, animal = '', revealEmoji = '' } = {}) {
+export function blowCloud(container, { reducedMotion = false, animal = '', revealEmoji = '', revealName = '' } = {}) {
   const reveal = revealEmoji || (animal ? animalEmoji(animal) : '☀️');
   const el = document.createElement('div');
   el.className = 'blowcloud';
@@ -466,7 +466,9 @@ export function blowCloud(container, { reducedMotion = false, animal = '', revea
     const scale = Math.max(0, 1 - puffs / need);
     cloud.style.transform = reducedMotion ? 'none' : `scale(${scale})`;
     cloud.style.opacity = String(scale);
-    label.textContent = puffs < need ? 'Again… big blow!' : 'You did it! The sun came out! 🌟';
+    label.textContent = puffs < need
+      ? 'Again… big blow!'
+      : (revealName ? `You found ${revealName}! 🌟` : 'You did it! The sun came out! 🌟');
     if (puffs >= need) {
       finished = true;
       el.querySelector('.reveal').classList.add('show');
@@ -569,7 +571,7 @@ export function popPups(container, { theme = {}, reducedMotion = false } = {}) {
 // Color helpers (child) — the buddy names a color; the child taps the matching
 // blob. One clear, doable job, with a cheer each round.
 // ---------------------------------------------------------------------------
-export function colorTap(container, { favoriteColor = 'blue', buddyName = 'Your buddy', reducedMotion = false } = {}) {
+export function colorTap(container, { favoriteColor = 'blue', buddyName = 'Your buddy', reducedMotion = false, roster = null } = {}) {
   const COLORS = [
     { k: 'red', hex: '#e06666' }, { k: 'blue', hex: '#6fa8dc' }, { k: 'green', hex: '#93c47d' },
     { k: 'yellow', hex: '#ffd966' }, { k: 'purple', hex: '#b48ee0' }, { k: 'orange', hex: '#f0a35e' },
@@ -585,19 +587,31 @@ export function colorTap(container, { favoriteColor = 'blue', buddyName = 'Your 
   const say = el.querySelector('.ct-say');
   const blobs = el.querySelector('.ct-blobs');
   const cheer = el.querySelector('.ct-cheer');
-  const rounds = 5;
+  // When a character roster is provided (e.g. the rescue pups), each round is a
+  // named helper asking for THEIR colour — so the characters lead the game.
+  const crew = (roster && roster.length) ? roster.filter((p) => COLORS.some((c) => c.k === p.color)) : null;
+  const rounds = crew ? Math.min(6, crew.length) : 5;
   let round = 0, gc = null;
-  const cheers = ['Yes! 🎉', 'You got it! ⭐', 'Woohoo!', 'Amazing!', 'High five! 🙌'];
+  const cheers = ['Yes! 🎉', 'You got it! ⭐', 'Woohoo!', 'Amazing!', 'High five! 🙌', 'Paws-ome! 🐾'];
 
-  const shuffleLocal = (a) => shuffle(a);
   const nextRound = () => {
     round++;
-    if (round > rounds) { say.textContent = 'You’re a color star! 🌈'; blobs.innerHTML = ''; setTimeout(() => gc?.complete?.(), 900); return; }
-    // pick a target, prefer favourite on first round
-    const pool = shuffleLocal(COLORS);
-    const target = round === 1 ? (COLORS.find((c) => c.k === favoriteColor) || pool[0]) : pool[0];
-    const choices = shuffleLocal([target, ...pool.filter((c) => c.k !== target.k).slice(0, 3)]);
-    say.textContent = `${escapeName(buddyName)} says: tap ${target.k}!`;
+    if (round > rounds) {
+      say.textContent = crew ? 'The whole team is ready! 🐾🌈' : 'You’re a color star! 🌈';
+      blobs.innerHTML = ''; setTimeout(() => gc?.complete?.(), 900); return;
+    }
+    let target, who = null;
+    if (crew) {
+      who = crew[(round - 1) % crew.length];
+      target = COLORS.find((c) => c.k === who.color) || shuffle(COLORS)[0];
+    } else {
+      const pool = shuffle(COLORS);
+      target = round === 1 ? (COLORS.find((c) => c.k === favoriteColor) || pool[0]) : pool[0];
+    }
+    const choices = shuffle([target, ...shuffle(COLORS).filter((c) => c.k !== target.k).slice(0, 3)]);
+    say.innerHTML = who
+      ? `Help <b>${escapeName(who.name)}</b> the ${escapeName(who.role)} — tap ${target.k}! ${who.emoji}`
+      : `${escapeName(buddyName)} says: tap ${target.k}!`;
     blobs.innerHTML = '';
     choices.forEach((c) => {
       const b = document.createElement('button');
@@ -606,7 +620,7 @@ export function colorTap(container, { favoriteColor = 'blue', buddyName = 'Your 
       b.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         if (c.k === target.k) {
-          cheer.textContent = cheers[(round - 1) % cheers.length];
+          cheer.textContent = who ? `${who.name}: ${cheers[(round - 1) % cheers.length]}` : cheers[(round - 1) % cheers.length];
           if (!reducedMotion) b.classList.add('pop');
           setTimeout(nextRound, 650);
         } else {

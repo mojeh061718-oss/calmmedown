@@ -3,7 +3,7 @@
 // into the guided session when scores are low, the closing re-assessment, and
 // the result. Screens render into #app. No framework — just small render fns.
 
-import { CHECKIN, ONBOARDING } from './content.js';
+import { CHECKIN, ONBOARDING, childTheme } from './content.js';
 import * as store from './store.js';
 import { buildSession, dailyInsight, describePlan } from './adapt.js';
 import { runGuidedSession } from './session.js';
@@ -426,6 +426,10 @@ function screenOkay(profile, record, pre) {
 function screenLeadIn(profile, pre, ids) {
   const plan = describePlan(ids);
   const child = profile.band === 'child';
+  const theme = child ? childTheme(profile) : null;
+  const crew = (theme && theme.roster)
+    ? `<p class="crew-line">${theme.roster.slice(0, 4).map((p) => p.emoji).join(' ')} ${esc(theme.heroes.slice(0, 3).join(', '))} are ready to help!</p>`
+    : '';
   mount(`
     <div class="wrap">
       <div class="card center fade-in help-lead">
@@ -434,6 +438,7 @@ function screenLeadIn(profile, pre, ids) {
         <p class="lede">${child
           ? 'We’ll do some cozy calm-down things. Ready?'
           : 'I’ve put together about ' + plan.minutes + ' minutes, just for you. Nothing to decide, nothing to fix — I’ll guide each step.'}</p>
+        ${crew}
         ${child ? '' : `<p class="muted tiny plan-list">${plan.titles.map(esc).join(' · ')}</p>`}
         <button class="btn btn-primary btn-lg" id="go">${child ? 'Let’s go' : 'I’m ready'}</button>
         <button class="btn btn-ghost" id="skip">Not right now</button>

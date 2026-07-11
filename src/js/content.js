@@ -615,8 +615,21 @@ export function techniqueById(id) {
 // branded/trademarked artwork, and let the grown-up type the actual character
 // names the child adores so they show up as the on-screen helpers.
 // ---------------------------------------------------------------------------
+// The rescue-pup roster: real character names with signature colours and roles
+// so it feels like her favourite show. We use friendly dog emoji + names +
+// colours (not any copyrighted artwork). If a grown-up types their own favourite
+// character names in onboarding, those are used instead.
+export const PUPS = [
+  { name: 'Chase',   color: 'blue',   emoji: '🐕‍🦺', role: 'police pup' },
+  { name: 'Marshall', color: 'red',   emoji: '🐶',    role: 'fire pup' },
+  { name: 'Skye',    color: 'pink',   emoji: '🐩',    role: 'flying pup' },
+  { name: 'Rubble',  color: 'yellow', emoji: '🐶',    role: 'builder pup' },
+  { name: 'Rocky',   color: 'green',  emoji: '🐕',    role: 'recycle pup' },
+  { name: 'Zuma',    color: 'orange', emoji: '🐶',    role: 'water pup' },
+];
+
 const THEMES = {
-  pups:    { emojis: ['🐶', '🐕', '🦮', '🐩', '🐕‍🦺', '🐾'], buddy: '🐶', word: 'pup',   crew: 'rescue pups' },
+  pups:    { emojis: ['🐕‍🦺', '🐶', '🐩', '🐕', '🐾', '🦴'], buddy: '🐶', word: 'pup',   crew: 'rescue pups', roster: PUPS },
   animals: { emojis: ['🐰', '🦊', '🐻', '🐼', '🐨', '🦁'], buddy: '🐻', word: 'friend', crew: 'animal friends' },
   ocean:   { emojis: ['🐠', '🐙', '🐢', '🐳', '🦀', '🐚'], buddy: '🐠', word: 'friend', crew: 'ocean friends' },
   space:   { emojis: ['🚀', '⭐', '🪐', '🌙', '☄️', '👽'], buddy: '🚀', word: 'star',   crew: 'space crew' },
@@ -627,7 +640,16 @@ const THEMES = {
 export function childTheme(profile) {
   const ob = profile.onboarding || {};
   const t = THEMES[ob.theme] || THEMES.animals;
-  const heroes = String(ob.heroes || '')
+  const typed = String(ob.heroes || '')
     .split(/[,/&]| and /i).map((s) => s.trim()).filter(Boolean).slice(0, 6);
-  return { ...t, heroes };
+  // If the grown-up typed character names, those become the helpers. Otherwise,
+  // for the pup theme, fall back to the classic rescue-pup roster so the pups
+  // show up by name without any setup.
+  const roster = t.roster
+    ? (typed.length
+        ? typed.map((name, i) => ({ ...t.roster[i % t.roster.length], name }))
+        : t.roster)
+    : null;
+  const heroes = typed.length ? typed : (roster ? roster.map((p) => p.name) : []);
+  return { ...t, roster, heroes };
 }
