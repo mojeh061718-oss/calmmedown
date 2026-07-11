@@ -322,6 +322,54 @@ fieldset.field-label { min-inline-size: auto; }
 .face-btn small { color: var(--muted); font-size: 0.7rem; }
 .face-btn.sel { border-color: var(--accent); background: rgba(127,176,217,0.18); }
 
+/* Quick check-in + link */
+.linklike { display: block; margin: 4px auto 0; background: none; border: 0; color: var(--accent-2); font: inherit; font-size: 0.92rem; cursor: pointer; text-decoration: underline; }
+.questions.quickmode .q:not(.overall) { display: none; }
+
+/* Nourish checklist */
+.nourish-list { list-style: none; padding: 0; margin: 8px auto; max-width: 34ch; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.nourish-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--card-2); cursor: pointer; }
+.nourish-item input { width: 20px; height: 20px; accent-color: var(--calm); }
+.nourish-item:has(input:checked) { border-color: var(--calm); background: rgba(134,201,179,0.12); }
+.ni-e { font-size: 1.2rem; }
+
+/* Word search */
+.wordsearch { width: 100%; }
+.ws-grid { display: grid; gap: 3px; max-width: 340px; margin: 0 auto; touch-action: none; user-select: none; }
+.ws-cell { aspect-ratio: 1; display: grid; place-items: center; padding: 0; font-size: 0.9rem; font-weight: 600;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--bg-1); color: var(--ink-soft); cursor: pointer; }
+.ws-cell.hi { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.ws-cell.found { background: rgba(134,201,179,0.28); color: var(--ink); border-color: var(--calm); }
+.ws-words { list-style: none; padding: 0; margin: 14px auto 0; max-width: 340px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.ws-words li { font-size: 0.85rem; letter-spacing: 0.06em; color: var(--ink-soft); padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; }
+.ws-words li.done { text-decoration: line-through; color: var(--calm); border-color: var(--calm); opacity: 0.7; }
+.ws-status { margin-top: 12px; }
+
+/* Walk pacer */
+.walk-track { display: flex; justify-content: center; gap: 40px; margin: 18px 0; font-size: 2.4rem; }
+.walk-track .foot { opacity: 0.25; transition: opacity 0.2s, transform 0.2s; }
+.walk-track .foot.right { transform: scaleX(-1); }
+.walk-track .foot.on { opacity: 1; transform: translateY(-6px); }
+.walk-track .foot.right.on { transform: translateY(-6px) scaleX(-1); }
+.walk-progress { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; max-width: 320px; margin: 8px auto 14px; }
+.walk-progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--calm), var(--accent)); transition: width 0.6s var(--ease); }
+
+/* Blow the cloud */
+.blowcloud { text-align: center; }
+.sky { position: relative; width: 240px; height: 200px; margin: 8px auto; border-radius: var(--radius);
+  background: radial-gradient(circle at 50% 120%, rgba(127,176,217,0.25), rgba(29,37,54,0.5)); border: 1px solid var(--line);
+  display: grid; place-items: center; cursor: pointer; overflow: hidden; }
+.sky .reveal { position: absolute; font-size: 4rem; opacity: 0.35; transition: opacity 0.5s, transform 0.5s; }
+.sky .reveal.show { opacity: 1; transform: scale(1.15); }
+.sky .cloud { position: relative; font-size: 5rem; transition: transform 0.4s var(--ease), opacity 0.4s; }
+
+/* Wiggle parade */
+.parade { text-align: center; }
+.parade-emoji { font-size: 4rem; margin: 12px 0; }
+.parade-emoji.pop { animation: pop 0.5s var(--ease); }
+@keyframes pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.parade-move { font-size: 1.3rem; font-weight: 650; min-height: 1.6em; }
+
 /* Result */
 .result-emoji { font-size: 3.4rem; margin-bottom: 6px; }
 .result.win { }
@@ -357,3 +405,10 @@ fieldset.field-label { min-inline-size: auto; }
 }
 .reduce-motion .fade-in, .reduce-motion .delay1, .reduce-motion .delay2, .reduce-motion .delay3 { animation: none !important; }
 .reduce-motion .breathe-dot { animation: none; opacity: 0.9; }
+.reduce-motion .parade-emoji.pop { animation: none; }
+.reduce-motion .walk-track .foot { transition: none; }
+.reduce-motion .fade-in, .reduce-motion .c-line { opacity: 1 !important; transform: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .parade-emoji.pop { animation: none; }
+  .c-line, .fade-in { opacity: 1 !important; transform: none !important; }
+}

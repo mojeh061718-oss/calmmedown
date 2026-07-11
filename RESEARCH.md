@@ -93,12 +93,99 @@ onboarding and gently reflects it back.
 
 ---
 
+## The "outward" lane: when breathing and stillness backfire
+
+Not everyone is helped by turning inward. For some people — and in some states,
+including the heavy, irritable, "not myself" hormonal weeks many people
+experience — being told to sit still and breathe or to notice their body
+*increases* distress and self-judgment. Focusing attention inward can amplify
+anxious or ruminative signals rather than quiet them.
+
+So the app has a second lane, chosen at onboarding and reinforced by what it
+learns: an **outward** set of tools built on getting up, getting outside into
+the light, moving, and absorbing distraction. For an outward user the session
+leads with these and deliberately **avoids** front-loading breathing, and it
+ends having *moved* rather than on stillness. (The app never labels why — it
+stays generic.) The evidence for these tools:
+
+### 8. Bright light & daylight — "Toward the light"
+
+Bright-light exposure is one of the best-supported non-drug ways to lift low
+mood. A systematic review of randomized trials of bright light therapy for the
+heavy premenstrual mood window found it reduced depressive symptoms across all
+included trials, and bright light has repeated RCT support as an adjunct for
+non-seasonal depression. Getting the eyes and body into daylight also naturally
+pulls attention outward.
+
+- PMDD non-drug options incl. light therapy (Medscape): <https://emedicine.medscape.com/article/293257-treatment>
+- Bright light for non-seasonal depression (RCT): <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9566126/>
+
+### 9. Movement & walking — "Walk it out"
+
+Aerobic exercise is a first-line non-pharmacologic recommendation for
+premenstrual mood symptoms and a broadly evidence-based mood and anxiety
+intervention. Movement discharges the surge of stress chemistry and gives a
+restless, "I have to act NOW" urge somewhere safe to go — which is why the app
+offers a footstep-paced walk (ideally outdoors) rather than asking an activated
+person to sit.
+
+- PMDD nonpharmacologic treatment (aerobic exercise): <https://emedicine.medscape.com/article/293257-treatment>
+
+### 10. Distraction & the word search
+
+Distraction — deliberately occupying the mind with an absorbing task — is one of
+the most reliable ways to interrupt an emotional spiral, and is a recognized
+distress-tolerance skill in DBT. It works especially well for people whose
+racing, ruminating thoughts don’t respond to slowing down. The generated **word
+search** exists for exactly this: a real, finite job for a buzzing brain, with
+no timer and no way to fail. (A light memory-pairs game and still-water ripples
+serve gentler versions of the same idea.)
+
+### 11. Body-care & steadiness — "A little care"
+
+When mood dips, basic self-care slips first — and low blood sugar, dehydration,
+and a disrupted routine all make a low feel worse. The app offers a soft,
+opt-in "a little care" nudge (water, a bite to eat, air, anything your routine
+includes). On supplements, the evidence is real but specific: systematic reviews
+find the strongest support for **calcium**, with **vitamin B6** and **chasteberry
+(Vitex)** also showing benefit for premenstrual symptoms, and mixed/insufficient
+evidence for magnesium and vitamin D alone. Because supplements are individual
+and medical, the app deliberately says only "anything your daily routine
+includes" and **never** names a supplement or gives clinical instructions —
+that conversation belongs with a doctor.
+
+- Herbs/vitamins/minerals for PMS (systematic review): <https://pubmed.ncbi.nlm.nih.gov/19923637/>
+- Supplements & herbal remedies for PMS (review): <https://www.ncbi.nlm.nih.gov/books/NBK72353/>
+
+---
+
 ## For young children (age ≤ 9)
 
-The same principles are translated into concrete, playful, developmentally
-appropriate forms — the standard toolkit of pediatric and school-counseling
-practice:
+A four-year-old’s **prefrontal cortex** — the brain’s regulation centre — is
+years from maturity. During a meltdown the amygdala floods, stress hormones
+spike, and the thinking brain goes offline: the child genuinely *cannot* reason
+or comply in that moment. This is normal development, not misbehaviour. Two
+things follow, and both shape the child track:
 
+1. **Co-regulation comes first.** Children borrow calm from a steady adult before
+   they can self-regulate. A calm voice, a lowered body, and rhythm literally
+   help stabilise the child’s nervous system, and repeated experiences of this
+   build their own regulatory wiring over time. So the child activities are
+   designed to be done *with* a grown-up, and several say so.
+2. **Catch it before the peak.** Once a meltdown fully lands, tools don’t work —
+   the window is *before* the crest. The child track therefore leads with quick,
+   playful redirection and movement to intercept a rising storm early.
+
+The techniques translate the same principles into concrete, playful,
+developmentally appropriate forms — the standard toolkit of pediatric and
+school-counseling practice:
+
+- **Wiggle parade** — a short burst of silly, guided movement (stomp like an
+  elephant, flap like a bird) discharges the surge and redirects through play,
+  intercepting a meltdown before it peaks.
+- **Blow the cloud away** — turns a long, calming exhale into a game, with a
+  reveal (the sun / their favourite animal) that holds attention long enough for
+  a storm to pass.
 - **Buddy belly breaths** — a stuffed animal on the belly makes slow
   diaphragmatic breathing visible and fun.
 - **"Smell the flower, blow out the candle"** — the simplest way to teach a young
@@ -107,6 +194,8 @@ practice:
   with a simple motor task a preschooler can follow.
 - **Naming the feeling with faces** — an early, picture-based version of affect
   labelling.
+
+- Prefrontal development & meltdowns / co-regulation (background): <https://blog.inthecortex.com/neurological-reason-tantrums/>
 
 ---
 

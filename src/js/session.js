@@ -7,7 +7,7 @@
 // optional, no-pressure thumb so the app can learn what actually helped.
 
 import { techniqueById } from './content.js';
-import { breathePacer, ripples, match, starBreath } from './games.js';
+import { breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade } from './games.js';
 
 export function runGuidedSession(container, profile, ids, opts = {}) {
   const reducedMotion = profile.prefs?.reducedMotion || opts.reducedMotion;
@@ -40,17 +40,22 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
 
   // --- Intro ---------------------------------------------------------------
   function renderIntro() {
-    const anchor = ob.anchor ? `<p class="soft-anchor">Bringing to mind: <em>${escapeHtml(ob.anchor)}</em></p>` : '';
     const child = profile.band === 'child';
+    const outward = ob.style === 'outward';
+    const anchor = (ob.anchor && !outward) ? `<p class="soft-anchor">Bringing to mind: <em>${escapeHtml(ob.anchor)}</em></p>` : '';
+    const heading = child ? 'Let’s get cozy.'
+      : outward ? 'Let’s get you out of your head.'
+      : 'You’re safe. Let’s take a few minutes just for you.';
+    const lede = child ? 'We’ll do some fun calm-down things together.'
+      : outward ? 'No sitting still, no fixing anything. We’ll get you moving and give your mind something to do. Stop whenever you want.'
+      : 'Nothing to fix, nothing to decide. We’ll go one gentle step at a time. If you need to stop, you can — any time.';
     root.innerHTML = `
       <div class="screen calm-screen fade-in">
         <div class="breathe-dot" aria-hidden="true"></div>
-        <h2>${child ? 'Let’s get cozy.' : 'You’re safe. Let’s take ten minutes just for you.'}</h2>
-        <p class="lede">${child
-          ? 'We’ll do some fun calm-down things together.'
-          : 'Nothing to fix, nothing to decide. We’ll go one gentle step at a time. If you need to stop, you can — any time.'}</p>
+        <h2>${heading}</h2>
+        <p class="lede">${lede}</p>
         ${anchor}
-        <button class="btn btn-primary btn-lg" id="begin">Begin</button>
+        <button class="btn btn-primary btn-lg" id="begin">${outward ? 'Let’s go' : 'Begin'}</button>
       </div>`;
     root.querySelector('#begin').addEventListener('click', next);
   }
@@ -92,8 +97,10 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
       renderAnchor(body, foot, t, ob);
     } else if (kind === 'child-feelings') {
       renderChildFeelings(body, foot, t);
+    } else if (kind === 'nourish') {
+      renderNourish(body, foot, t);
     } else {
-      // 'guide' and 'body' — stepped instructions.
+      // 'guide', 'outside', and 'body' — stepped instructions.
       renderSteps(body, foot, t);
     }
   }
@@ -241,13 +248,37 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
 
   function runGame(t, body, reducedMotion, profile) {
     const dur = t.durationSec || 120;
+    const cob = profile.onboarding || {};
     if (t.game === 'ripples') return ripples(body, { durationSec: dur, reducedMotion });
     if (t.game === 'match') {
       const sym = profile.band === 'child' ? ['🐢', '🦋', '🐟', '⭐', '🌈', '🐥'] : undefined;
       return match(body, { durationSec: dur, reducedMotion, symbols: sym });
     }
     if (t.game === 'starBreath') return starBreath(body, { durationSec: dur, reducedMotion });
+    if (t.game === 'wordSearch') return wordSearch(body, { durationSec: dur, reducedMotion });
+    if (t.game === 'walkPacer') return walkPacer(body, { durationSec: dur, reducedMotion });
+    if (t.game === 'blowCloud') return blowCloud(body, { reducedMotion, animal: cob.favoriteAnimal || '' });
+    if (t.game === 'wiggleParade') return wiggleParade(body, { reducedMotion, buddyName: cob.buddyName || 'Your buddy' });
     return breathePacer(body, { pattern: 'sigh', cycles: 8, reducedMotion });
+  }
+
+  // "A little care" — a gentle, generic body-care nudge. Deliberately soft and
+  // opt-in-feeling: tick what you can, skip what you can't. Never clinical.
+  function renderNourish(body, foot, t) {
+    const items = [
+      { e: '💧', label: 'A few sips of water' },
+      { e: '🍎', label: 'A bite of something to eat' },
+      { e: '🪟', label: 'Open a window or get some air' },
+      { e: '💊', label: 'Anything your daily routine includes' },
+      { e: '🧣', label: 'Something warm or comfortable on' },
+    ];
+    body.innerHTML = `
+      <p class="lede-sub">When things feel heavy, small care slips first. No pressure — just tick what you can, skip the rest.</p>
+      <ul class="nourish-list">
+        ${items.map((it, i) => `<li><label class="nourish-item"><input type="checkbox" data-i="${i}"><span class="ni-e">${it.e}</span><span>${it.label}</span></label></li>`).join('')}
+      </ul>
+      <p class="muted tiny">This is a kindness, not a checklist to finish.</p>`;
+    footControls(foot, t);
   }
 
   // --- Wrap up -------------------------------------------------------------

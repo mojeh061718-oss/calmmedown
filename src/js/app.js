@@ -214,7 +214,7 @@ function screenHome(profile) {
       <section class="insight insight-${insight.tone} fade-in">
         <h2>${esc(insight.headline)}</h2>
         <p>${esc(insight.body)}</p>
-        ${insight.streak > 1 ? `<p class="streak">🔥 ${insight.streak}-day streak of showing up for yourself</p>` : ''}
+        ${(insight.streak > 1 && insight.tone !== 'tender') ? `<p class="streak">🔥 ${insight.streak}-day streak of showing up for yourself</p>` : ''}
       </section>
 
       <div class="home-actions">
@@ -250,6 +250,8 @@ function greeting() {
 }
 
 function historyStrip(profile) {
+  // On a low-stimulation setup, keep the home quiet — no chart of past days.
+  if (profile.prefs?.reducedMotion) return '';
   const recs = store.recentRecords(profile, 10).filter((r) => r.pre);
   if (!recs.length) return '';
   const bars = recs.map((r) => {
@@ -295,10 +297,11 @@ function screenSwitcher(current) {
 // ---------------------------------------------------------------------------
 // Check-in (pre and post share this renderer)
 // ---------------------------------------------------------------------------
-function screenCheckin(profile, forceHelp, mode = 'pre', onDone = null) {
+function screenCheckin(profile, forceHelp, mode = 'pre', onDone = null, quick = false) {
   const cfg = CHECKIN[profile.band] || CHECKIN.adult;
   const answers = {};
   let overall = null;
+  let quickMode = quick; // only the 1-10 asked; for heavy days when 5 is too many
   const child = profile.band === 'child';
 
   const questionsHtml = cfg.questions.map((q, i) => `
@@ -331,10 +334,11 @@ function screenCheckin(profile, forceHelp, mode = 'pre', onDone = null) {
         <span></span>
       </header>
       ${mode === 'post' ? '' : `<p class="muted center">${child ? 'Let’s see how you’re feeling.' : 'Answer however feels true right now. There are no wrong answers.'}</p>`}
-      <div class="questions">
+      <div class="questions${quickMode ? ' quickmode' : ''}">
         ${overallHtml}
         ${questionsHtml}
       </div>
+      ${(!child && !quickMode) ? '<button class="linklike" id="quick" type="button">Too much right now? Just the one question →</button>' : ''}
       <button class="btn btn-primary btn-lg" id="submit" disabled>${mode === 'post' ? 'See my result' : 'Done'}</button>
     </div>`);
 
@@ -353,15 +357,21 @@ function screenCheckin(profile, forceHelp, mode = 'pre', onDone = null) {
   });
 
   function maybeEnable() {
-    const allQ = cfg.questions.every((q) => answers[q.id] != null);
+    const allQ = quickMode || cfg.questions.every((q) => answers[q.id] != null);
     el('#submit').disabled = !(overall != null && allQ);
   }
 
+  el('#quick')?.addEventListener('click', () => {
+    quickMode = true;
+    app.querySelector('.questions').classList.add('quickmode');
+    el('#quick').remove();
+    maybeEnable();
+  });
   el('#back')?.addEventListener('click', () => screenHome(profile));
   el('#submit').addEventListener('click', () => {
     const pre = { overall, scores: answers };
     if (mode === 'post') return onDone(pre);
-    handlePre(profile, pre, forceHelp);
+    handlePre(profile, pre, forceHelp, quickMode);
   });
 }
 
@@ -375,7 +385,7 @@ function scaleButtons(q, child, cfg) {
 }
 
 // Decide what happens after the pre check-in.
-function handlePre(profile, pre, forceHelp) {
+function handlePre(profile, pre, forceHelp, quick = false) {
   const record = store.startCheckin(profile.id, pre, forceHelp || store.needsHelp(pre.overall, pre.scores));
   const help = forceHelp || store.needsHelp(pre.overall, pre.scores);
 
@@ -385,7 +395,7 @@ function handlePre(profile, pre, forceHelp) {
   }
   // Build the personalised plan and show a soft "let's help you" lead-in.
   const ids = buildSession(profile, pre);
-  flow = { profile, record, pre, ids };
+  flow = { profile, record, pre, ids, quick };
   screenLeadIn(profile, pre, ids);
 }
 
@@ -444,8 +454,9 @@ function startSession() {
   runGuidedSession(rootEl, profile, ids, {
     onDone: (session) => {
       store.attachSession(profile.id, record.id, session);
-      // Post check-in reuses the check-in renderer in 'post' mode.
-      screenCheckin(profile, false, 'post', (post) => finishAndShow(post));
+      // Post check-in reuses the check-in renderer in 'post' mode, mirroring the
+      // quick/full choice made at the start so before/after stay comparable.
+      screenCheckin(profile, false, 'post', (post) => finishAndShow(post), flow.quick);
     },
   });
 }
@@ -489,7 +500,7 @@ function screenResult(profile, rec, optional) {
         <div class="result-emoji">${emoji}</div>
         <h2>${title}</h2>
         <p class="lede">${body}</p>
-        ${!child ? `<div class="result-meter">
+        ${(!child && r.deltaPoints > 0) ? `<div class="result-meter">
             <div class="rm-row"><span>Before</span><div class="rm-bar"><div style="width:${(r.preScore / 10) * 100}%"></div></div><b>${r.preScore}</b></div>
             <div class="rm-row"><span>After</span><div class="rm-bar after"><div style="width:${(r.postScore / 10) * 100}%"></div></div><b>${r.postScore}</b></div>
           </div>` : ''}

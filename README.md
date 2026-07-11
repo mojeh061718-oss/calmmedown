@@ -30,16 +30,25 @@ the five questions paint a low picture), the app slides into **“let’s help
 you”** mode. There’s also an always-available **“I need help right now”** button
 for when a mood arrives out of nowhere.
 
-**A ~10-minute guided session.** Personalised each time. It settles the body
-first (because when someone is flooded, *words don’t land* — the body has to
-calm before the mind can), then grounds the senses, then occupies the mind with
-a gentle focus game, then softens the inner voice. Every step is one thing on
-the screen, slow, and calm.
+**A ~10-minute guided session, in the lane that fits you.** Personalised every
+time. Onboarding asks what actually helps *you* in a hard moment, and the app
+runs one of two arcs — and keeps learning which works:
 
-**A focus game in the middle.** Small, non-overstimulating, no score, no timer,
-no way to lose — just enough to pull attention out of the spiral. (Follow-the-
-breath light, still water ripples, gentle memory pairs, star-breathing for
-little ones.)
+- **Settle inward** — for people helped by calming the body first: cyclic
+  sighing, box breathing, grounding, a kinder voice. (When someone is flooded,
+  *words don’t land* — the body has to calm before the mind can.)
+- **Get out of your head** — because for many people, being told to sit still and
+  breathe makes it *worse*. This lane gives permission to move: step toward the
+  light / outside, walk it out, and absorbing distraction — and it ends having
+  *moved*, not on stillness.
+
+Every step is one thing on the screen, slow, and calm.
+
+**A focus game in the middle.** Small, non-overstimulating, no score, no way to
+lose, and you can leave the moment you’re ready. A freshly **generated word
+search** gives a racing mind a real, finite job; there’s also follow-the-breath
+light, still-water ripples, and gentle memory pairs. Kids get their own:
+"blow the cloud away," a wiggle parade, and star-breathing.
 
 **It measures the win.** The same check-in is given at the end. If the person’s
 state improves by **more than 10%**, it’s celebrated as a win. Smaller lifts are
@@ -53,9 +62,17 @@ if the last few days have been heavier than usual, it gently pre-positions extra
 softness, **without ever naming a cause.**
 
 **For a young child**, everything changes: a grown-up sets up the child’s
-favourite animal and colour, the check-in becomes faces, and the session becomes
-buddy-belly-breaths, “smell the flower / blow the candle,” star breathing, and
-naming feelings with pictures.
+favourite animal and colour, the check-in becomes faces, and the session leads
+with playful movement and redirection to catch a meltdown *before* it peaks — a
+wiggle parade, "blow the cloud away" (which reveals their favourite animal),
+buddy-belly-breaths, star breathing, and naming feelings with pictures. It’s
+built to be done *with* a calm grown-up (co-regulation), because a four-year-old
+borrows steadiness from an adult before they can find their own.
+
+**When a full check-in is too much**, there’s a one-question option (just the
+1–10), so a heavy day never turns into a form to fill out. And the result screen
+never scores your suffering back at you — the before/after meter only appears
+when things actually improved.
 
 ---
 
