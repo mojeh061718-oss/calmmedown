@@ -1,0 +1,15 @@
+{
+  "name": "calm me down",
+  "short_name": "calm",
+  "description": "A private, offline helper that guides you back to calm on the hard days.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#10141f",
+  "theme_color": "#10141f",
+  "categories": ["health", "lifestyle"],
+  "icons": [
+    { "src": "./icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

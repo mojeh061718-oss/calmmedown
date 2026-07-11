@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#10141f" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#eef2f8" media="(prefers-color-scheme: light)" />
+  <meta name="description" content="A private, offline helper that guides you back to calm on the hard days." />
+  <title>calm me down</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icons/icon.svg" />
+  <link rel="stylesheet" href="./src/css/styles.css" />
+</head>
+<body>
+  <main id="app" aria-live="polite">
+    <div class="wrap"><div class="card center"><span class="brand-mark big">🫧</span><p class="muted">Loading your helper…</p></div></div>
+  </main>
+
+  <script type="module">
+    import { start } from './src/js/app.js';
+    start();
+
+    // Offline support — register only where available (needs https or
+    // localhost). Silently ignored when opened from file:// during dev.
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+
+  <noscript>
+    <div class="wrap"><div class="card"><h2>JavaScript is needed</h2>
+    <p class="muted">This helper runs entirely in your browser and needs JavaScript turned on.</p></div></div>
+  </noscript>
+</body>
+</html>
