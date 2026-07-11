@@ -7,7 +7,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - claude/wellness-mood-support-app-okpw45
+      - main
   workflow_dispatch:
 
 # Permissions the deploy needs (least privilege).
