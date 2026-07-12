@@ -7,7 +7,7 @@
 // optional, no-pressure thumb so the app can learn what actually helped.
 
 import { techniqueById, childTheme } from './content.js';
-import { breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade, popPups, colorTap, scribble } from './games.js';
+import { breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade, popPups, colorTap, scribble, pupRescue } from './games.js';
 
 export function runGuidedSession(container, profile, ids, opts = {}) {
   const reducedMotion = profile.prefs?.reducedMotion || opts.reducedMotion;
@@ -298,10 +298,11 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
       revealEmoji: helper ? helper.emoji : (theme ? theme.buddy : ''),
       revealName: helper ? helper.name : (theme && theme.heroes[0]) || '',
     });
-    if (t.game === 'wiggleParade') return wiggleParade(body, { reducedMotion, buddyName });
+    if (t.game === 'wiggleParade') return wiggleParade(body, { reducedMotion, buddyName, theme });
     if (t.game === 'popPups') return popPups(body, { reducedMotion, theme });
     if (t.game === 'colorTap') return colorTap(body, { reducedMotion, buddyName, favoriteColor: cob.favoriteColor || 'blue', roster: theme && theme.roster });
     if (t.game === 'scribble') return scribble(body, { reducedMotion });
+    if (t.game === 'pupRescue') return pupRescue(body, { reducedMotion, theme, roster: theme && theme.roster });
     return breathePacer(body, { pattern: 'sigh', cycles: 8, reducedMotion });
   }
 

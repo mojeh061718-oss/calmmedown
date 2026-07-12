@@ -249,8 +249,8 @@ export const ONBOARDING = {
       id: 'heroes',
       type: 'text',
       title: 'Favorite characters?',
-      subtitle: 'Type their names (like her favorite pups) and we’ll use them as her helpers. You can leave this blank.',
-      placeholder: 'e.g. Chase, Skye, Marshall',
+      subtitle: 'Type their names — the first one becomes her main helper. Leave blank to get the whole crew.',
+      placeholder: 'e.g. Skye, Chase, Marshall',
       optional: true,
     },
     {
@@ -603,6 +603,17 @@ export const TECHNIQUES = [
     durationSec: 120,
     why: 'Young children often can’t put big feelings into words, but they can put them onto a page. Scribbling gives the feeling somewhere to go and is calming and expressive at once — a different, developmentally natural way to “say” how they feel.',
   },
+  {
+    id: 'child-puprescue',
+    title: 'Get the team ready',
+    lead: 'Help each helper get ready for the rescue — one at a time.',
+    kind: 'game',
+    game: 'pupRescue',
+    bands: ['child'],
+    severityFit: 'low',
+    durationSec: 90,
+    why: 'A gentle, paced “get the team ready” game names each favourite character and gives one clear tap at a time — enough focus and delight to settle a child, themed around what they love.',
+  },
 ];
 
 export function techniqueById(id) {
@@ -623,6 +634,7 @@ export const PUPS = [
   { name: 'Chase',   color: 'blue',   emoji: '🐕‍🦺', role: 'police pup' },
   { name: 'Marshall', color: 'red',   emoji: '🐶',    role: 'fire pup' },
   { name: 'Skye',    color: 'pink',   emoji: '🐩',    role: 'flying pup' },
+  { name: 'Everest', color: 'teal',   emoji: '🐶',    role: 'snow pup' },
   { name: 'Rubble',  color: 'yellow', emoji: '🐶',    role: 'builder pup' },
   { name: 'Rocky',   color: 'green',  emoji: '🐕',    role: 'recycle pup' },
   { name: 'Zuma',    color: 'orange', emoji: '🐶',    role: 'water pup' },
@@ -642,14 +654,27 @@ export function childTheme(profile) {
   const t = THEMES[ob.theme] || THEMES.animals;
   const typed = String(ob.heroes || '')
     .split(/[,/&]| and /i).map((s) => s.trim()).filter(Boolean).slice(0, 6);
-  // If the grown-up typed character names, those become the helpers. Otherwise,
-  // for the pup theme, fall back to the classic rescue-pup roster so the pups
-  // show up by name without any setup.
-  const roster = t.roster
-    ? (typed.length
-        ? typed.map((name, i) => ({ ...t.roster[i % t.roster.length], name }))
-        : t.roster)
-    : null;
-  const heroes = typed.length ? typed : (roster ? roster.map((p) => p.name) : []);
+
+  // Build the roster. When the grown-up types names, the FIRST one is her star
+  // (main buddy / first helper). A typed name that matches a known pup keeps
+  // that pup's real colour, role, and emoji (so "Skye" is the pink flying pup);
+  // an unknown name gets a friendly default slot. Remaining known pups fill in
+  // behind the favourites so the whole crew is still available.
+  let roster = null;
+  if (t.roster) {
+    if (typed.length) {
+      const used = new Set();
+      const chosen = typed.map((name, i) => {
+        const match = t.roster.find((p) => p.name.toLowerCase() === name.toLowerCase());
+        if (match) { used.add(match.name); return { ...match, name: match.name }; }
+        return { ...t.roster[i % t.roster.length], name };
+      });
+      const rest = t.roster.filter((p) => !used.has(p.name));
+      roster = [...chosen, ...rest];
+    } else {
+      roster = t.roster;
+    }
+  }
+  const heroes = typed.length ? roster.map((p) => p.name) : (roster ? roster.map((p) => p.name) : []);
   return { ...t, roster, heroes };
 }

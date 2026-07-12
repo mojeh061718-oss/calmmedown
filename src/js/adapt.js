@@ -40,6 +40,7 @@ const SLOT = {
   'child-cloud': 'child-breath', 'child-star': 'child-game', 'child-bubbles': 'child-game',
   'child-feelings': 'child-feelings', 'child-parade': 'child-move',
   'child-pop': 'child-game', 'child-colortap': 'child-game', 'child-scribble': 'child-feelings',
+  'child-puprescue': 'child-game',
 };
 
 const slotOf = (id) => SLOT[id] || 'other';

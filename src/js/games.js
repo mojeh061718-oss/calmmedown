@@ -485,15 +485,25 @@ export function blowCloud(container, { reducedMotion = false, animal = '', revea
 // guided movement discharges the surge and redirects through play, before a
 // meltdown fully lands. A grown-up joining in is the point (co-regulation).
 // ---------------------------------------------------------------------------
-export function wiggleParade(container, { reducedMotion = false, buddyName = 'Buddy' } = {}) {
-  const MOVES = [
-    { e: '🐘', t: 'Stomp like an elephant!' },
-    { e: '🐦', t: 'Flap like a bird!' },
-    { e: '🦘', t: 'Hop like a kangaroo!' },
-    { e: '🌟', t: 'Reach up for the stars!' },
-    { e: '🐢', t: 'Now sloooow like a turtle…' },
-    { e: '🫧', t: 'Shake the wiggles out… and freeze!' },
-  ];
+export function wiggleParade(container, { reducedMotion = false, buddyName = 'Buddy', theme = null } = {}) {
+  const isPups = theme && theme.word === 'pup';
+  const MOVES = isPups
+    ? [
+        { e: '🚒', t: 'Stomp like Marshall’s fire truck!' },
+        { e: '🚁', t: 'Fly your arms like Skye!' },
+        { e: '🚓', t: 'Zoom low like Chase on patrol!' },
+        { e: '🏗️', t: 'Dig and scoop like Rubble!' },
+        { e: '🐢', t: 'Now go sloooow, calm paws…' },
+        { e: '🐾', t: 'Shake the wiggles out… and freeze!' },
+      ]
+    : [
+        { e: '🐘', t: 'Stomp like an elephant!' },
+        { e: '🐦', t: 'Flap like a bird!' },
+        { e: '🦘', t: 'Hop like a kangaroo!' },
+        { e: '🌟', t: 'Reach up for the stars!' },
+        { e: '🐢', t: 'Now sloooow like a turtle…' },
+        { e: '🫧', t: 'Shake the wiggles out… and freeze!' },
+      ];
   const el = document.createElement('div');
   el.className = 'parade';
   el.innerHTML = `
@@ -575,7 +585,7 @@ export function colorTap(container, { favoriteColor = 'blue', buddyName = 'Your 
   const COLORS = [
     { k: 'red', hex: '#e06666' }, { k: 'blue', hex: '#6fa8dc' }, { k: 'green', hex: '#93c47d' },
     { k: 'yellow', hex: '#ffd966' }, { k: 'purple', hex: '#b48ee0' }, { k: 'orange', hex: '#f0a35e' },
-    { k: 'pink', hex: '#e79ac0' },
+    { k: 'pink', hex: '#e79ac0' }, { k: 'teal', hex: '#5bc0be' },
   ];
   const el = document.createElement('div');
   el.className = 'colortap';
@@ -693,6 +703,61 @@ export function scribble(container, { reducedMotion = false } = {}) {
   return timedGame(el, 120);
 }
 
+// ---------------------------------------------------------------------------
+// Pup Rescue (child) — get the whole rescue team ready, one pup at a time. Each
+// tap gives a pup their badge with a happy cheer and their name/role. Paced,
+// named, and completely winnable. Falls back to generic friends off-theme.
+// ---------------------------------------------------------------------------
+export function pupRescue(container, { roster = null, theme = {}, reducedMotion = false } = {}) {
+  const crewWord = theme.crew || 'team';
+  const team = (roster && roster.length)
+    ? roster.slice(0, 6)
+    : (theme.emojis || ['🐶', '🐰', '⭐', '🐥', '🐢', '🦊']).slice(0, 5).map((e, i) => ({ name: `Friend ${i + 1}`, emoji: e, role: 'helper' }));
+
+  const el = document.createElement('div');
+  el.className = 'puprescue';
+  el.innerHTML = `
+    <p class="game-hint muted">Help get the ${escapeName(crewWord)} ready — tap each one!</p>
+    <div class="pr-row"></div>
+    <p class="pr-say" role="status" aria-live="polite">Tap the glowing one!</p>`;
+  container.appendChild(el);
+  const row = el.querySelector('.pr-row');
+  const say = el.querySelector('.pr-say');
+
+  const btns = team.map((p, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'pr-pup'; b.dataset.i = String(i);
+    b.innerHTML = `<span class="pr-emoji">${p.emoji}</span><small>${escapeName(p.name)}</small>`;
+    row.appendChild(b);
+    return b;
+  });
+
+  let idx = 0, gc = null;
+  const arm = () => {
+    btns.forEach((b, i) => b.classList.toggle('active', i === idx));
+    if (team[idx]) say.textContent = `Tap ${team[idx].name}!`;
+  };
+  btns.forEach((b) => b.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const i = Number(b.dataset.i);
+    if (i !== idx) return; // gently guide to the glowing one
+    b.classList.remove('active'); b.classList.add('ready');
+    if (!reducedMotion) { b.classList.add('pop'); }
+    const p = team[idx];
+    say.textContent = `${p.name} the ${p.role} is ready! ${p.emoji}`;
+    idx++;
+    if (idx >= team.length) {
+      setTimeout(() => { say.textContent = `The ${crewWord} are all ready — let’s go! 🐾🎉`; setTimeout(() => gc?.complete?.(), 900); }, 600);
+    } else {
+      setTimeout(arm, 650);
+    }
+  }));
+  setTimeout(arm, 500);
+
+  gc = timedGame(el, 90);
+  return gc;
+}
+
 function animalEmoji(name) {
   const n = String(name).toLowerCase();
   const map = { bunny: '🐰', rabbit: '🐰', cat: '🐱', kitty: '🐱', dog: '🐶', puppy: '🐶',
@@ -705,4 +770,4 @@ function escapeName(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-export const GAMES = { breathOrb: breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade, popPups, colorTap, scribble };
+export const GAMES = { breathOrb: breathePacer, ripples, match, starBreath, wordSearch, walkPacer, blowCloud, wiggleParade, popPups, colorTap, scribble, pupRescue };

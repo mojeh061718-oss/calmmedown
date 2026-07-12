@@ -443,6 +443,23 @@ fieldset.field-label { min-inline-size: auto; }
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 .ct-cheer { min-height: 1.4em; font-size: 1.1rem; }
 
+/* Pup Rescue — get the team ready */
+.puprescue { text-align: center; width: 100%; }
+.pr-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 14px 0; }
+.pr-pup { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 84px; min-height: 96px;
+  border: 2px solid var(--line); background: var(--card-2); border-radius: 18px; cursor: pointer; font: inherit;
+  opacity: 0.45; transition: opacity 0.25s, transform 0.2s, border-color 0.2s, background 0.2s; }
+.pr-pup .pr-emoji { font-size: 2.4rem; line-height: 1; }
+.pr-pup small { color: var(--muted); font-size: 0.72rem; font-weight: 600; }
+.pr-pup.active { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(127,176,217,0.25); animation: glow 1.4s ease-in-out infinite; }
+.pr-pup.ready { opacity: 1; border-color: var(--calm); background: rgba(134,201,179,0.18); }
+.pr-pup.ready small { color: var(--calm); }
+.pr-pup.ready::after { content: "✓"; position: absolute; }
+.pr-pup.pop { animation: pop 0.4s var(--ease); }
+@keyframes glow { 0%,100% { box-shadow: 0 0 0 4px rgba(127,176,217,0.20); } 50% { box-shadow: 0 0 0 8px rgba(127,176,217,0.30); } }
+.pr-say { font-size: 1.2rem; font-weight: 650; min-height: 1.6em; margin-top: 8px; }
+.reduce-motion .pr-pup.active { animation: none; }
+
 /* Scribble pad */
 .scribble { text-align: center; width: 100%; }
 .scribble-tools { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
