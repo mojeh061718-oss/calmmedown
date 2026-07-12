@@ -530,7 +530,7 @@ export const TECHNIQUES = [
   {
     id: 'child-feelings',
     title: 'Show your feeling',
-    lead: 'Show me your feeling — the weather inside, and how big it is.',
+    lead: 'Show me your feeling — in whatever way fits today.',
     kind: 'child-feelings',
     bands: ['child'],
     severityFit: 'low',

@@ -234,45 +234,53 @@ export function runGuidedSession(container, profile, ids, opts = {}) {
     footControls(foot, t);
   }
 
-  // Young children "say" feelings through pictures, weather, and size — not
-  // words or scales. This offers a few playful representations to pick from.
+  // Young children "say" feelings through pictures, colour, size, place in the
+  // body, and characters — not words or scales. We keep a whole library of these
+  // representations and show a DIFFERENT pair each time (rotating by how many
+  // check-ins she's done), so "showing your feeling" stays fresh and gives her
+  // several distinct ways to express it over time.
+  const FEEL_MODES = [
+    { q: 'What’s the weather inside you?', opts: [['⛈️', 'Stormy'], ['🌧️', 'Rainy'], ['☁️', 'Cloudy'], ['🌤️', 'Peeking sun'], ['☀️', 'Sunny']] },
+    { q: 'What colour is your feeling?', color: true, opts: [['#e06666', 'Red'], ['#6fa8dc', 'Blue'], ['#ffd966', 'Yellow'], ['#93c47d', 'Green'], ['#b48ee0', 'Purple'], ['#8792ab', 'Grey']] },
+    { q: 'How big is the feeling?', size: true, opts: [['🐭', 'a little'], ['🐰', 'medium'], ['🦁', 'SO big']] },
+    { q: 'Which face feels like you?', opts: [['😖', 'Argh'], ['😢', 'Sad'], ['😐', 'Meh'], ['🙂', 'Okay'], ['😄', 'Great']] },
+    { q: 'Where do you feel it?', opts: [['🧠', 'My head'], ['❤️', 'My chest'], ['🌀', 'My tummy'], ['✨', 'All over']] },
+    { q: 'Which animal feels like you?', opts: [['🐢', 'Slow turtle'], ['🐰', 'Jumpy bunny'], ['🦁', 'Roary lion'], ['🐨', 'Sleepy koala'], ['🐥', 'Chirpy chick']] },
+    { q: 'How loud is your feeling?', opts: [['🤫', 'Whisper'], ['🗣️', 'Talking'], ['📣', 'Shouty'], ['🌋', 'ERUPTING']] },
+  ];
+
   function renderChildFeelings(body, foot, t) {
     const theme = childTheme(profile);
     const helper = theme.roster && theme.roster[0];
     const buddy = helper ? `${helper.emoji} ${helper.name}:` : theme.buddy;
-    const weathers = [
-      ['⛈️', 'Stormy'], ['🌧️', 'Rainy'], ['☁️', 'Cloudy'], ['🌤️', 'Peeking sun'], ['☀️', 'Sunny'],
-    ];
-    const sizes = [
-      ['🐭', 'a little', 'sz-s'], ['🐰', 'medium', 'sz-m'], ['🦁', 'SO big', 'sz-l'],
-    ];
-    body.innerHTML = `
-      <div class="feelex">
-        <p class="feelex-q">What’s the weather inside you?</p>
-        <div class="weather-row">${weathers.map(([e, l]) => `<button class="weather-btn" type="button" aria-label="${l}"><span>${e}</span><small>${l}</small></button>`).join('')}</div>
-        <p class="feelex-q">How big is the feeling?</p>
-        <div class="size-row">${sizes.map(([e, l, c]) => `<button class="size-btn ${c}" type="button" aria-label="${l}"><span>${e}</span><small>${l}</small></button>`).join('')}</div>
-        <p class="label-echo big" role="status" aria-live="polite"></p>
-      </div>`;
-    const echo = body.querySelector('.label-echo');
-    const pick = { weather: null, size: null };
-    const update = () => {
-      if (pick.weather && pick.size) {
-        echo.textContent = `${buddy} Thank you for showing me. Even ${pick.size} feelings get smaller. I’m right here with you. 💛`;
-      } else if (pick.weather || pick.size) {
-        echo.textContent = 'Thank you for showing me. 💛';
-      }
+    // Rotate which two ways we offer this time.
+    const off = (profile.history ? profile.history.length : 0);
+    const modes = [FEEL_MODES[off % FEEL_MODES.length], FEEL_MODES[(off + 1) % FEEL_MODES.length]];
+
+    const renderMode = (m, mi) => {
+      const btns = m.opts.map(([a, label], i) => {
+        const cls = 'feel-btn' + (m.size ? ' size-btn ' + ['sz-s', 'sz-m', 'sz-l'][i] : '');
+        const face = m.color
+          ? `<span class="color-dot" style="background:${a}"></span>`
+          : `<span>${a}</span>`;
+        return `<button class="${cls}" type="button" data-mode="${mi}" data-label="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">${face}${label ? `<small>${escapeHtml(label)}</small>` : ''}</button>`;
+      }).join('');
+      return `<p class="feelex-q">${escapeHtml(m.q)}</p><div class="feel-row">${btns}</div>`;
     };
-    body.querySelectorAll('.weather-btn').forEach((b) =>
+
+    body.innerHTML = `<div class="feelex">${modes.map(renderMode).join('')}<p class="label-echo big" role="status" aria-live="polite"></p></div>`;
+    const echo = body.querySelector('.label-echo');
+    const picks = {};
+    const update = () => {
+      const n = Object.keys(picks).length;
+      if (n >= 2) echo.textContent = `${buddy} Thank you for showing me. Big or small, I’m right here with you. 💛`;
+      else if (n) echo.textContent = 'Thank you for showing me. 💛';
+    };
+    body.querySelectorAll('.feel-btn').forEach((b) =>
       b.addEventListener('click', () => {
-        body.querySelectorAll('.weather-btn').forEach((x) => x.classList.toggle('sel', x === b));
-        pick.weather = b.getAttribute('aria-label'); update();
-      })
-    );
-    body.querySelectorAll('.size-btn').forEach((b) =>
-      b.addEventListener('click', () => {
-        body.querySelectorAll('.size-btn').forEach((x) => x.classList.toggle('sel', x === b));
-        pick.size = b.getAttribute('aria-label'); update();
+        const mode = b.dataset.mode;
+        body.querySelectorAll(`.feel-btn[data-mode="${mode}"]`).forEach((x) => x.classList.toggle('sel', x === b));
+        picks[mode] = b.dataset.label; update();
       })
     );
     footControls(foot, t);

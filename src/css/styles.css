@@ -411,6 +411,18 @@ fieldset.field-label { min-inline-size: auto; }
 .weather-pick-btn small, .weather-btn small { color: var(--muted); font-size: 0.68rem; }
 .weather-pick-btn.sel, .weather-btn.sel { border-color: var(--accent); background: rgba(127,176,217,0.2); }
 
+/* Feeling expression modes (rotating ways to show a feeling) */
+.feel-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 8px 0 4px; }
+.feel-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  min-width: 62px; min-height: 76px; padding: 8px 6px; border-radius: 16px;
+  border: 1px solid var(--line); background: var(--card-2); cursor: pointer; font: inherit;
+}
+.feel-btn span { font-size: 2rem; line-height: 1; }
+.feel-btn small { color: var(--muted); font-size: 0.7rem; }
+.feel-btn.sel { border-color: var(--accent); background: rgba(127,176,217,0.2); }
+.feel-btn .color-dot { width: 40px; height: 40px; border-radius: 50%; box-shadow: var(--shadow); }
+
 /* Size-of-feeling picker */
 .feelex-q { font-weight: 650; margin: 14px 0 6px; }
 .size-row { display: flex; gap: 10px; justify-content: center; align-items: flex-end; }
